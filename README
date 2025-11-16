@@ -82,6 +82,7 @@ Em meu computador, como não tenho uma GPU, treinei usando apenas a CPU.
 
 Isso demorou 2 horas e 40 minutos e eu nem usei todo o conjunto da Unicamp para o treinamento.
 Precisaremos rodar isso em Nuvem ou em uma GPU muito boa para isso dar certo.
+Se quisermos usar todo o conjunto da Unicamp no treinamento, o que eu acho que vai ser necessário, pois o modelo que eu gerei não gera nada coerente, é necessário apagar duas linhas em train_pretrain.py
 
 5) Realizar o fine-tuning do modelo:
 
