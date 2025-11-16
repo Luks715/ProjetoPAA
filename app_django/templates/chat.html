@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+</head>
+<body>
+
+<h1>Chat {{ chat.id }}</h1>
+
+<!-- Lista de Chats -->
+<div>
+    <h3>Seus Chats</h3>
+    
+    <!-- Botão de novo chat -->
+    <form action="{% url 'new_chat' %}" method="POST" style="margin-bottom: 10px;">
+        {% csrf_token %}
+        <button type="submit">Novo Chat</button>
+    </form>
+
+
+    <ul>
+        {% for c in all_chats %}
+            <li>
+                {% if c.id == chat.id %}
+                    <strong>Chat {{ c.id }}</strong>
+                {% else %}
+                    <a href="{% url 'chat_view' c.id %}">Chat {{ c.id }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<hr>
+
+<!-- Mensagens -->
+<div>
+    {% for message in messages %}
+        <p><strong>
+            {% if message.sender %}
+                Usuário:
+            {% else %}
+                IA:
+            {% endif %}
+        </strong> {{ message.text }}</p>
+    {% empty %}
+        <p>Nenhuma mensagem ainda.</p>
+    {% endfor %}
+</div>
+
+<hr>
+
+<!-- Formulário de envio -->
+<form action="" method="POST">
+    {% csrf_token %}
+    <input type="text" name="text" placeholder="Digite sua mensagem..." required>
+    <button type="submit">Enviar</button>
+</form>
+
+</body>
+</html>

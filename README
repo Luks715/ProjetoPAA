@@ -1,0 +1,103 @@
+Esse repositório no github contém o seguinte
+
+Um arquivo requirements.txt contendo todas as bibliotecas usadas no trabalho até agora, como por exemplo
+
+-hugging face, pytorch, numpy, django, etc...
+
+Um gitignore
+
+Uma pasta ia_pytorch contendo os seguintes arquivos
+
+model.py          = Arquitetura para o Decoder Only Transformer
+tokenizer.py      = Tokenizador putilizado para rodar e treinar a ia_pytorch
+train_pretrain.py = Arquivo que realiza o pré-treino da IA com o Huggin face, utiliza um conjunto de treino da Unicamp (https://huggingface.co/datasets/unicamp-dl/quati)
+train_finetune.py = Utiliza o PDF para treinar a IA
+dataset.py        = Realiza o pré-processamento do PDF e o transforma em um conjunto de treinamento para train_finetune.py
+run_inference.py  = Utilziado para rodar a ia, pega o que estiver escrito em input.txt, gera uma resposta e coloca o resultado em output.txt
+input.txt         = Utilizado para coletar o prompt na hora de rodar a IA
+output.txt        = Coloca o resultado da IA
+
+
+Outra pasta app_django contendo a aplicação de fato com os models, views, etc...
+
+Para rodar o projeto, siga os passos a seguir: 
+
+1) Criar um ambiente virtual no diretório onde você baixou os arquivos
+
+No Windows, isso já vem instalado como parte do python3, mas no Ubuntu talvez você tenha que instalar o venv
+
+sudo apt install python3-venv
+
+Para criar o ambiente virtual, rode: 
+
+python3 -m venv venv
+
+Isso criará uma pasta venv no diretório, para inciar o venv, o que é necessário para rodar o trabalho. 
+
+Para iniciar o ambiente virtual, rode isso:
+
+source venv/bin/activate
+
+2) Instale as dependências de requirements.txt
+
+Isso pode ser feito ao rodar:
+
+pip install -r requirements.txt
+
+Se você possui uma GPU da Nvidia e quer usá-la ao invés da sua CPU, rode isso: 
+
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+
+3) Rode o django
+
+Vá para a pasta app_django, com "cd app_django", e inicalize o banco de dados sqlite:
+
+python3 manage.py migrate
+
+isso cria os modelos de chat e mensagem.
+
+Para o bom funcionamento da aplicação, é necessário que o modelo da IA esteja na pasta "app_django/modelo_pytorch"
+Caso o model.pt não esteja nessa pasta, a aplicação não consegue gerar mensagens.
+
+Após incicializar o banco de dados, para inciar a aplicação, rode:
+
+python3 manage.py runserver
+
+e acesse seu localhost em: http://127.0.0.1:8000/chat/1/
+
+4) Gerar e treinar o modelo
+
+Primeiro, devemos ter um arquivo tokenizer.json para treinar a IA.
+
+O arquivo tokenizer.json já está no diretório, mas caso você queira gerá-lo, rode:
+
+python3 tokenizer.py
+
+Para criar um modelo, você deve rodar: 
+
+python3 train_pretrain.py 
+
+isso criará o arquivo model_pretrained.pt e irá reescrever o arquivo tokenizer.json
+Em meu computador, como não tenho uma GPU, treinei usando apenas a CPU.
+
+Isso demorou 2 horas e 40 minutos e eu nem usei todo o conjunto da Unicamp para o treinamento.
+Precisaremos rodar isso em Nuvem ou em uma GPU muito boa para isso dar certo.
+
+5) Realizar o fine-tuning do modelo:
+
+Não podemos usar diretamente o PDF, primeiro precisamos convertê-lo em um material usável pela IA, para isso, rode:
+
+python3 dataset.py
+
+Isso irá gerar um arquivo dataset_finetune.pt, que será usado para o fine tuning.
+Para realizar o fine tuning, rode:
+
+python3 train_funetune.py
+
+Isso irá gerar o arquivo model_finetuned.pt, que deve ser exportado para a aplicação django em app_django/modelo_pytorch junto com o tokenizer.json
+
+Se quiser testar manualmente o modelo, escreva o prompt em input.txt e rode:
+
+python3 run_inference.py
+
+O resultado estará em output.txt
